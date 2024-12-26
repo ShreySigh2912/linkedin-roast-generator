@@ -5,10 +5,13 @@ const RoastApp = () => {
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [roast, setRoast] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    console.log('Submitting URL:', linkedinUrl);
     
     try {
       const response = await fetch('http://localhost:3000/api/roast', {
@@ -19,21 +22,41 @@ const RoastApp = () => {
         body: JSON.stringify({ url: linkedinUrl })
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
+
       if (data.roast) {
         setRoast(data.roast);
+      } else {
+        setError('No roast generated');
       }
     } catch (error) {
       console.error('Error:', error);
+      setError('Failed to generate roast');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleRandomRoast = () => {
+  const handleRandomRoast = async () => {
     setIsLoading(true);
-    // Add random roast generation logic
-    setIsLoading(false);
+    setError('');
+    
+    try {
+      const response = await fetch('http://localhost:3000/api/random-roast');
+      const data = await response.json();
+      if (data.roast) {
+        setRoast(data.roast);
+      } else {
+        setError('No roast generated');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Failed to generate roast');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -75,20 +98,61 @@ const RoastApp = () => {
                 disabled={isLoading}
                 className="absolute right-2 top-2 bg-gradient-to-r from-coral-500 to-coral-600 text-white p-3 rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
               >
-                <Sparkles size={20} />
+                {isLoading ? (
+                  <RefreshCw className="animate-spin" size={20} />
+                ) : (
+                  <Sparkles size={20} />
+                )}
               </button>
             </div>
 
             <button
               type="button"
               onClick={handleRandomRoast}
+              disabled={isLoading}
               className="flex items-center gap-2 text-gray-500 hover:text-coral-600 transition-colors mx-auto"
             >
               <RefreshCw size={16} />
               Generate Random Roast
             </button>
           </form>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl">
+              {error}
+            </div>
+          )}
         </div>
+
+        {/* Roast Result */}
+        {roast && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 space-y-4">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+              Your Roast is Ready! 🔥
+            </h3>
+            <p className="text-gray-700 text-lg">
+              {roast}
+            </p>
+            <div className="flex gap-4 pt-4">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(roast);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-coral-100 text-coral-600 rounded-xl hover:bg-coral-200 transition-colors"
+              >
+                Copy to Clipboard
+              </button>
+              <button
+                onClick={() => {
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(roast)}`, '_blank');
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-coral-100 text-coral-600 rounded-xl hover:bg-coral-200 transition-colors"
+              >
+                Share on Twitter
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <p className="text-center text-gray-500 text-sm">

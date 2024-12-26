@@ -1,9 +1,8 @@
-import RoastApp from './components/RoastApp'
+import React from 'react';
+import RoastApp from './components/RoastApp';
 
 function App() {
-  return (
-    <RoastApp />
-  )
+  return <RoastApp />;
 }
 
-export default App
+export default App;
