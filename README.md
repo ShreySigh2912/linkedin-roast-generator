@@ -15,13 +15,3 @@ A fun tool that generates playful roasts based on LinkedIn profiles. Turn corpor
 
 - **Frontend:** React, TailwindCSS, shadcn/ui
 - **Backend:** Node.js, Express, Puppeteer
-
-## Getting Started
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-- Git
-
-### Installation & Setup
-See the [INSTALLATION.md](INSTALLATION.md) file for detailed setup instructions.
